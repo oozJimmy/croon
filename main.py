@@ -6,6 +6,7 @@ croon - a terminal lunar/solar info display
 """
 
 import datetime
+from datetime import datetime as dt
 from shutil import get_terminal_size
 import sys
 import json
@@ -29,6 +30,7 @@ def main():
     # get terminal dimensions, default to 80 col, 20 rows
     (term_width, term_height) = get_terminal_size((80, 20))
     curr_date = datetime.date.today()
+    time = dt.now()
 
     # web request to US Navy Astronomical Applications Department
     oneday_resp_json = send_request_moonsun_oneday(lat, long, curr_date, time_zone)
@@ -45,17 +47,17 @@ def main():
     end_style = "[/]"
     text_to_display = "\n".join(
         (
-            f"{style}Date:{end_style} {data['day_of_week']} {curr_date.month}/{curr_date.day}/{curr_date.year}",
+            f"{style}Date:{end_style} {data['day_of_week']} {curr_date.month}/{curr_date.day}/{curr_date.year} {convert_from_24hr_time(f'{time.hour}:{time.minute}')}",
             f"{style}Coordinates: {end_style}{lat}, {long}",
             f"{style}Current Phase:{end_style} {data['current_phase']}",
             f"{style}Fracillum:{end_style} {data['fracillum']}",
             f"{style}Next Phase: {end_style}{data['next_phase']['phase']} {data['next_phase']['month']}/{data['next_phase']['day']}/{data['next_phase']['year']} {data['next_phase']['time']}",
-            f"{style}Moonrise:{end_style} {data['moonrise']}",
-            f"{style}Moonset:{end_style} {data['moonset']}",
+            f"{style}Dawn:{end_style} {data['dawn']}",
             f"{style}Sunrise:{end_style} {data['sunrise']}",
             f"{style}Sunset:{end_style} {data['sunset']}",
-            f"{style}Dawn:{end_style} {data['dawn']}",
             f"{style}Dusk:{end_style} {data['dusk']}",
+            f"{style}Moonrise:{end_style} {data['moonrise']}",
+            f"{style}Moonset:{end_style} {data['moonset']}",
         )
     )
 
@@ -150,6 +152,7 @@ def send_request_moonsun_oneday(lat, long, date, time_zone) -> dict:
         "coords": f"{lat},{long}",
         "date": f"{date.year}-{date.month}-{date.day}",
         "tz": f"-5",
+        "id": "jdkcroon",
     }
     # resp = requests.get("https://aa.usno.navy.mil/api/rstt/oneday", params)
     resp = requests.get(
@@ -169,6 +172,7 @@ def send_request_moonphases(date):
     params = {
         "nump": num_phases,
         "date": f"{date.year}-{date.month}-{date.day}",
+        "id": "jdkcroon",
     }
     resp = requests.get("https://aa.usno.navy.mil/api/moon/phases/date", params)
     if not resp.status_code == 200:
@@ -194,45 +198,59 @@ def print_rich_console(
 
 
 def format_moon_data(oneday: dict, phases: dict) -> dict:
-    try:
-        moon_transit = oneday["moondata"]
-        sun_transit = oneday["sundata"]
+    # try:
+    moon_transit = oneday["moondata"]
+    sun_transit = oneday["sundata"]
+    next_phase = phases[0]
 
-        for item in sun_transit:
-            if item["phen"] == "Set":
-                sunset_time = item["time"]
-            elif item["phen"] == "Rise":
-                sunrise_time = item["time"]
-            elif item["phen"] == "Begin Civil Twilight":
-                dawn = item["time"]
-            elif item["phen"] == "End Civil Twilight":
-                dusk = item["time"]
+    for item in sun_transit:
+        if item["phen"] == "Set":
+            sunset_time = convert_from_24hr_time(item["time"])
+        elif item["phen"] == "Rise":
+            sunrise_time = convert_from_24hr_time(item["time"])
+        elif item["phen"] == "Begin Civil Twilight":
+            dawn = convert_from_24hr_time(item["time"])
+        elif item["phen"] == "End Civil Twilight":
+            dusk = convert_from_24hr_time(item["time"])
 
-        for item in moon_transit:
-            if item["phen"] == "Set":
-                moonset_time = item["time"]
-            elif item["phen"] == "Rise":
-                moonrise_time = item["time"]
+    for item in moon_transit:
+        if item["phen"] == "Set":
+            moonset_time = convert_from_24hr_time(item["time"])
+        elif item["phen"] == "Rise":
+            moonrise_time = convert_from_24hr_time(item["time"])
 
-        out_data = {
-            "day_of_week": oneday["day_of_week"],
-            "current_phase": oneday["curphase"],
-            "fracillum": oneday["fracillum"],
-            "sunrise": sunrise_time,
-            "sunset": sunset_time,
-            "moonrise": moonrise_time,
-            "moonset": moonset_time,
-            "dawn": dawn,
-            "dusk": dusk,
-            "next_phase": phases[0],
-        }
+    out_data = {
+        "day_of_week": oneday["day_of_week"],
+        "current_phase": oneday["curphase"],
+        "fracillum": oneday["fracillum"],
+        "sunrise": sunrise_time,
+        "sunset": sunset_time,
+        "moonrise": moonrise_time,
+        "moonset": moonset_time,
+        "dawn": dawn,
+        "dusk": dusk,
+        "next_phase": {
+            "phase": next_phase["phase"],
+            "month": next_phase["month"],
+            "day": next_phase["day"],
+            "year": next_phase["year"],
+            "time": convert_from_24hr_time(next_phase["time"]),
+        },
+    }
 
+    """
     except KeyError:
         print("Error formatting data")
-        print(KeyError)
+        inspect(KeyError)
         exit(1)
-
+    """
     return out_data
+
+
+def convert_from_24hr_time(time: str):
+    # Converts string from 24hr time format to 12hr time format with AM/PM indication
+    # expected format 20:05 or 08:05
+    return dt.strftime(dt.strptime(time, "%H:%M"), "%I:%M%p")
 
 
 if __name__ == "__main__":
