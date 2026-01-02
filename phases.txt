@@ -1,0 +1,110 @@
+          ssssssssss          
+       ssss        ssss       
+     sss              sss     
+   sss                  sss   
+  sss                    sss  
+  ss                      ss  
+  ss                      ss  
+  sss                    sss  
+   sss                  sss   
+     sss              sss     
+       ssss        ssss       
+          ssssssssss          
+
+
+          ssssssssss          
+       ssss     '..ssss       
+     sss         '....sss     
+   sss             '....sss   
+  sss                ....sss  
+  ss                 .....ss  
+  ss                 .....ss  
+  sss                ....sss  
+   sss             ,....sss   
+     sss         ,....sss     
+       ssss     ,..ssss       
+          ssssssssss          
+
+
+          ssssssssss          
+       ssss    ....ssss       
+     sss       .......sss     
+   sss         .........sss   
+  sss          ..........sss  
+  ss           ...........ss  
+  ss           ...........ss  
+  sss          ..........sss  
+   sss         .........sss   
+     sss       .......sss     
+       ssss    ....ssss       
+          ssssssssss          
+
+
+          ssssssssss          
+       ssss  ,.....ssss       
+     sss    ,.........sss     
+   sss    ,.............sss   
+  sss     ...............sss  
+  ss      ................ss  
+  ss      ................ss  
+  sss     ...............sss  
+   sss    '..............ss   
+     sss    '.........sss     
+       ssss  '.....ssss       
+          ssssssssss          
+
+
+          ssssssssss          
+       ssss........ssss       
+     sss..............sss     
+   sss..................sss   
+  sss....................sss  
+  ss......................ss  
+  ss......................ss  
+  sss....................sss  
+   sss..................sss   
+     sss..............sss     
+       ssss........ssss       
+          ssssssssss          
+
+
+          ssssssssss          
+       ssss.....,  ssss       
+     sss.........,    sss     
+   sss.............,    sss   
+  sss................    sss  
+  ss.................     ss  
+  ss.................     ss  
+  sss................    sss  
+   sss.............'    sss   
+     sss.........'    sss     
+       ssss.....'  ssss       
+          ssssssssss          
+
+
+          ssssssssss          
+       ssss....    ssss       
+     sss.......       sss     
+   sss.........         sss   
+  ss...........          sss  
+  ss...........           ss  
+  ss...........           ss  
+  ss...........          sss  
+   sss.........         sss   
+     sss.......       sss     
+       ssss....    ssss       
+          ssssssssss          
+
+
+          ssssssssss          
+       ssss..'     ssss       
+     sss....'         sss     
+   sss....'             sss   
+  sss.....               sss  
+  ss......                ss  
+  ss......                ss  
+  sss....,               sss  
+   sss....,             sss  
+     sss....,         sss     
+       ssss..,     ssss       
+          ssssssssss          
