@@ -16,6 +16,7 @@ from rich.markup import escape
 from rich.layout import Layout
 from rich.console import Console
 from rich.theme import Theme
+from enum import Enum
 
 
 def main():
@@ -127,21 +128,21 @@ def phase_to_index(phase: str) -> int:
     # Takes a phase string and returns an index for which ascii moon art to show
     index: int = 0
 
-    phase_choices = [
-        "New Moon",
-        "Waxing Crescent",
-        "First Quarter",
-        "Waxing Gibbous",
-        "Full Moon",
-        "Waning Gibbous",
-        "Last Quarter",
-        "Waning Crescent",
-    ]
+    phase_choices = {
+        "New Moon": 0,
+        "Waxing Crescent": 1,
+        "First Quarter": 2,
+        "Waxing Gibbous": 3,
+        "Full Moon": 4,
+        "Waning Gibbous": 5,
+        "Third Quarter": 6,
+        "Waning Crescent": 7,
+    }
 
-    if phase in phase_choices:
-        index = phase_choices.index(phase)
-    else:
+    index = phase_choices.get(phase, -1)
+    if index == -1:
         rprint("[red]Error: phase_to_index, Moon phase art could not be selected[/]")
+
     return index
 
 
@@ -203,32 +204,42 @@ def format_moon_data(oneday: dict, phases: dict) -> dict:
     sun_transit = oneday["sundata"]
     next_phase = phases[0]
 
+    class Orbit_times(Enum):
+        SUNRISE = 0
+        SUNSET = 1
+        MOONRISE = 2
+        MOONSET = 3
+        DAWN = 4
+        DUSK = 5
+
+    time_data = ["No Data"] * 6
+
     for item in sun_transit:
         if item["phen"] == "Set":
-            sunset_time = convert_from_24hr_time(item["time"])
+            time_data[Orbit_times.SUNSET.value] = convert_from_24hr_time(item["time"])
         elif item["phen"] == "Rise":
-            sunrise_time = convert_from_24hr_time(item["time"])
+            time_data[Orbit_times.SUNRISE.value] = convert_from_24hr_time(item["time"])
         elif item["phen"] == "Begin Civil Twilight":
-            dawn = convert_from_24hr_time(item["time"])
+            time_data[Orbit_times.DAWN.value] = convert_from_24hr_time(item["time"])
         elif item["phen"] == "End Civil Twilight":
-            dusk = convert_from_24hr_time(item["time"])
+            time_data[Orbit_times.DUSK.value] = convert_from_24hr_time(item["time"])
 
     for item in moon_transit:
         if item["phen"] == "Set":
-            moonset_time = convert_from_24hr_time(item["time"])
+            time_data[Orbit_times.MOONSET.value] = convert_from_24hr_time(item["time"])
         elif item["phen"] == "Rise":
-            moonrise_time = convert_from_24hr_time(item["time"])
+            time_data[Orbit_times.MOONRISE.value] = convert_from_24hr_time(item["time"])
 
     out_data = {
         "day_of_week": oneday["day_of_week"],
         "current_phase": oneday["curphase"],
         "fracillum": oneday["fracillum"],
-        "sunrise": sunrise_time,
-        "sunset": sunset_time,
-        "moonrise": moonrise_time,
-        "moonset": moonset_time,
-        "dawn": dawn,
-        "dusk": dusk,
+        "sunrise": time_data[Orbit_times.SUNRISE.value],
+        "sunset": time_data[Orbit_times.SUNSET.value],
+        "moonrise": time_data[Orbit_times.MOONRISE.value],
+        "moonset": time_data[Orbit_times.MOONSET.value],
+        "dawn": time_data[Orbit_times.DAWN.value],
+        "dusk": time_data[Orbit_times.DUSK.value],
         "next_phase": {
             "phase": next_phase["phase"],
             "month": next_phase["month"],
